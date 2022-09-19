@@ -1,0 +1,61 @@
+#include <iostream>
+#include <fstream>
+#include <random>
+#include <ctime>
+#include "Trie.h"
+using namespace std;
+
+//Loads file of words and inserts into trie
+void loadFile(Trie &root) {
+    string word;
+    ifstream file("../dataset/words.txt");
+
+    while (file>>word) {
+        root.insert(word);
+    }
+    file.close();
+}
+
+//todo review this method
+//Gets random word from file
+string getRandomWord(int length) {
+    string word;
+    ifstream file("words.txt");
+
+    //Generates random number, goes to that line in the file
+    mt19937 mt(time(0));
+    uniform_int_distribution<int> dist(1, 370105); // total words in txt file
+    int wordNumber = dist(mt);
+
+    for (int i = 0; i < wordNumber; ++i) {
+        file >> word;
+    }
+
+    //If word at that line is not the length user specified, go to next word in list until correct length found
+    //Similar to "open addressing", except we are pulling words, not hashing
+    while (word.size() != length) {
+        if (!(file>>word)) {
+            file.clear();
+            file.seekg(0);
+        }
+    }
+
+    file.close();
+    return word;
+}
+
+int main() {
+
+    /* To be deleted...
+     * Just showing how initializing and loading words into trie works
+     * Demo of search/getRandomWord
+     */
+
+    Trie words;
+    loadFile(words);
+    cout << boolalpha << words.search("hello") << endl;
+    cout << boolalpha << words.search("test") << endl;
+    cout << getRandomWord(5);
+
+    return 0;
+}
